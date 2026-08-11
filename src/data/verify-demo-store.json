@@ -1,0 +1,439 @@
+{
+  "meta": {
+    "organizationName": "Northstar Verify Labs",
+    "environment": "demo",
+    "refreshedAt": "2026-08-11T23:01:52.401Z"
+  },
+  "organizationProfile": {
+    "name": "Northstar Verify Labs",
+    "industry": "Business services",
+    "workforceSize": "1,200 employees",
+    "primaryIdp": "Okta Workforce Identity",
+    "financeSystem": "NetSuite",
+    "supportPlatform": "ServiceNow",
+    "riskPosture": "Elevated human-risk controls"
+  },
+  "integrations": [
+    {
+      "id": "int-okta",
+      "name": "Okta Workforce Identity",
+      "category": "Identity",
+      "status": "Connected",
+      "coverage": "Account recovery and MFA reset events"
+    },
+    {
+      "id": "int-servicenow",
+      "name": "ServiceNow",
+      "category": "Service desk",
+      "status": "Connected",
+      "coverage": "Help-desk request intake and operator actions"
+    },
+    {
+      "id": "int-netsuite",
+      "name": "NetSuite",
+      "category": "Finance",
+      "status": "Pilot",
+      "coverage": "Vendor change holds and payout release controls"
+    },
+    {
+      "id": "int-workday",
+      "name": "Workday",
+      "category": "HRIS",
+      "status": "Planned",
+      "coverage": "Payroll destination changes and employee verification"
+    }
+  ],
+  "settings": {
+    "verificationDefaults": [
+      "Block privileged recovery until phishing-resistant proof is recorded",
+      "Require verified callback for any vendor bank-detail change",
+      "Require clean-channel verification for payroll redirects"
+    ],
+    "approvalRouting": [
+      "Security Analyst reviews privileged recovery requests",
+      "Controller approves vendor payment-route changes",
+      "HR Operations Manager approves payroll redirects"
+    ],
+    "retention": "Audit events retained for 180 days in demo mode",
+    "notifications": "Email and Slack notifications simulated in the activity feed"
+  },
+  "policyPack": [
+    {
+      "id": "policy-admin-recovery",
+      "name": "Admin Recovery Lock",
+      "workflowType": "account_recovery",
+      "description": "Admin and privileged accounts must complete phishing-resistant proof and security oversight.",
+      "conditions": [
+        "Account tier is admin or privileged",
+        "Request includes MFA reset or new device enrollment"
+      ],
+      "requirements": [
+        "Passkey or ID + liveness verification",
+        "Security manager approval"
+      ]
+    },
+    {
+      "id": "policy-vendor-change",
+      "name": "Vendor Payment Change Hold",
+      "workflowType": "vendor_change",
+      "description": "Banking changes require verified callback and finance approval before release.",
+      "conditions": [
+        "Bank details changed",
+        "Request originates from email or AP portal"
+      ],
+      "requirements": [
+        "Verified callback to known contact",
+        "Controller approval"
+      ]
+    },
+    {
+      "id": "policy-payroll-change",
+      "name": "Payroll Redirect Guard",
+      "workflowType": "payroll_change",
+      "description": "Direct-deposit changes must be verified on a clean secondary channel.",
+      "conditions": [
+        "Payroll destination modified",
+        "After-hours or unmanaged device activity"
+      ],
+      "requirements": [
+        "Known-channel verification",
+        "HR operations approval"
+      ]
+    }
+  ],
+  "teamDirectory": [
+    {
+      "id": "analyst-nadia",
+      "name": "Nadia Brooks",
+      "role": "Security Analyst"
+    },
+    {
+      "id": "lead-owen",
+      "name": "Owen Hale",
+      "role": "IT Service Desk Lead"
+    },
+    {
+      "id": "controller-rhea",
+      "name": "Rhea Patel",
+      "role": "Controller"
+    },
+    {
+      "id": "manager-evan",
+      "name": "Evan Stone",
+      "role": "HR Operations Manager"
+    }
+  ],
+  "requests": [
+    {
+      "id": "VR-2401",
+      "title": "Privileged account recovery",
+      "workflowType": "account_recovery",
+      "sourceSystem": "Okta Help Desk",
+      "requestedBy": "Maya Lewis",
+      "subjectName": "Jordan Ames",
+      "department": "Infrastructure",
+      "assignedTeam": "Identity Security",
+      "targetSystem": "Okta Admin Console",
+      "requestedChannel": "Phone via service desk",
+      "targetLabel": "Admin console access",
+      "requestedAction": "Reset password and enroll replacement passkey",
+      "summary": "Caller reported a lost phone and requested immediate recovery for an admin account.",
+      "riskScore": 92,
+      "priority": "Critical",
+      "amountAtRisk": 0,
+      "verificationOptions": [
+        "passkey",
+        "id_liveness"
+      ],
+      "requiredApprovalRoles": [
+        "Security Analyst"
+      ],
+      "signals": [
+        {
+          "id": "signal-lost-device",
+          "label": "Lost-device narrative on privileged account",
+          "severity": "high",
+          "context": "Matches known help-desk social-engineering pretext.",
+          "weight": 34
+        },
+        {
+          "id": "signal-geo-shift",
+          "label": "Recent sign-in from new region",
+          "severity": "medium",
+          "context": "Login telemetry shifted from Austin to Bucharest within 6 hours.",
+          "weight": 21
+        },
+        {
+          "id": "signal-device-change",
+          "label": "New MFA device request",
+          "severity": "high",
+          "context": "Would re-establish trust on an unverified device.",
+          "weight": 27
+        }
+      ],
+      "policyIds": [
+        "policy-admin-recovery"
+      ],
+      "status": "awaiting_verification",
+      "openedAt": "2026-08-11T22:47:52.400Z",
+      "verificationChallenges": [],
+      "approvals": [],
+      "auditTrail": [
+        {
+          "id": "72ad042f-80e1-4533-9e6c-e0f204281b86",
+          "type": "request_opened",
+          "actor": "System",
+          "detail": "Request created from Okta Help Desk.",
+          "createdAt": "2026-08-11T22:47:52.400Z"
+        },
+        {
+          "id": "cf2fba79-f824-4e65-bfc2-7faeb1b74ced",
+          "type": "policy_hit",
+          "actor": "Policy Engine",
+          "detail": "Admin Recovery Lock required phishing-resistant verification.",
+          "createdAt": "2026-08-11T22:48:52.400Z"
+        }
+      ]
+    },
+    {
+      "id": "VR-2402",
+      "title": "Vendor bank-detail change",
+      "workflowType": "vendor_change",
+      "sourceSystem": "NetSuite AP Queue",
+      "requestedBy": "Ava Martin",
+      "subjectName": "Northwind Medical Supply",
+      "department": "Accounts Payable",
+      "assignedTeam": "Accounts Payable",
+      "targetSystem": "NetSuite Vendor Master",
+      "requestedChannel": "Email thread reply",
+      "targetLabel": "Vendor payout route",
+      "requestedAction": "Replace beneficiary account ending in 8841",
+      "summary": "Vendor replied inside an existing invoice thread asking for a same-day bank-detail change.",
+      "riskScore": 88,
+      "priority": "High",
+      "amountAtRisk": 148500,
+      "verificationOptions": [
+        "verified_callback",
+        "signed_confirmation"
+      ],
+      "requiredApprovalRoles": [
+        "Controller"
+      ],
+      "signals": [
+        {
+          "id": "signal-thread-shift",
+          "label": "Bank detail changed inside active email thread",
+          "severity": "high",
+          "context": "Classic vendor email compromise pattern.",
+          "weight": 31
+        },
+        {
+          "id": "signal-urgent-language",
+          "label": "Urgent settlement requested",
+          "severity": "medium",
+          "context": "Message asked for payment release before close of business.",
+          "weight": 17
+        },
+        {
+          "id": "signal-country-change",
+          "label": "Beneficiary country differs from master record",
+          "severity": "high",
+          "context": "Existing vendor record is U.S.; requested bank is in a new country.",
+          "weight": 29
+        }
+      ],
+      "policyIds": [
+        "policy-vendor-change"
+      ],
+      "status": "awaiting_approval",
+      "openedAt": "2026-08-11T22:28:52.400Z",
+      "verificationChallenges": [
+        {
+          "id": "db6dde74-0a77-40ee-a0b6-d78e92a27369",
+          "methodType": "verified_callback",
+          "status": "passed",
+          "performedBy": "Nadia Brooks",
+          "note": "Verified against vendor master record contact.",
+          "createdAt": "2026-08-11T22:34:52.400Z",
+          "completedAt": "2026-08-11T22:36:52.400Z"
+        }
+      ],
+      "approvals": [],
+      "auditTrail": [
+        {
+          "id": "d5527106-c1df-41e5-a0e6-28d7c43ef069",
+          "type": "request_opened",
+          "actor": "System",
+          "detail": "Vendor change request imported from NetSuite AP Queue.",
+          "createdAt": "2026-08-11T22:28:52.400Z"
+        },
+        {
+          "id": "e9d5e9ae-2685-4bb2-9315-434acc0a8d88",
+          "type": "verification_passed",
+          "actor": "Nadia Brooks",
+          "detail": "Verified callback completed successfully.",
+          "createdAt": "2026-08-11T22:36:52.400Z"
+        }
+      ]
+    },
+    {
+      "id": "VR-2403",
+      "title": "Payroll direct-deposit change",
+      "workflowType": "payroll_change",
+      "sourceSystem": "Workday Inbox",
+      "requestedBy": "Chris Cole",
+      "subjectName": "Tanya West",
+      "department": "People Operations",
+      "assignedTeam": "People Operations",
+      "targetSystem": "Workday Payroll",
+      "requestedChannel": "Personal email",
+      "targetLabel": "Employee direct deposit",
+      "requestedAction": "Update payroll destination before tomorrow payout",
+      "summary": "Employee requested an urgent deposit redirect from a personal webmail account.",
+      "riskScore": 84,
+      "priority": "High",
+      "amountAtRisk": 12400,
+      "verificationOptions": [
+        "known_channel",
+        "id_liveness"
+      ],
+      "requiredApprovalRoles": [
+        "HR Operations Manager"
+      ],
+      "signals": [
+        {
+          "id": "signal-personal-email",
+          "label": "Request came from personal email",
+          "severity": "medium",
+          "context": "Bypasses corporate mailbox trust signals.",
+          "weight": 18
+        },
+        {
+          "id": "signal-after-hours",
+          "label": "Submitted outside payroll support hours",
+          "severity": "medium",
+          "context": "Common pressure tactic before payroll release.",
+          "weight": 16
+        },
+        {
+          "id": "signal-bank-swap",
+          "label": "Destination account fully replaced",
+          "severity": "high",
+          "context": "Would redirect funds without prior verification.",
+          "weight": 24
+        }
+      ],
+      "policyIds": [
+        "policy-payroll-change"
+      ],
+      "status": "denied",
+      "openedAt": "2026-08-11T22:03:52.400Z",
+      "verificationChallenges": [
+        {
+          "id": "cf2a9789-759b-4ccc-a8e3-e1c6f652d956",
+          "methodType": "known_channel",
+          "status": "failed",
+          "performedBy": "Owen Hale",
+          "note": "Employee could not validate using existing contact number.",
+          "createdAt": "2026-08-11T22:09:52.400Z",
+          "completedAt": "2026-08-11T22:12:52.400Z"
+        }
+      ],
+      "approvals": [],
+      "auditTrail": [
+        {
+          "id": "a3d05dda-9054-497b-9aea-728ec2a95340",
+          "type": "request_opened",
+          "actor": "System",
+          "detail": "Payroll change request imported from Workday.",
+          "createdAt": "2026-08-11T22:03:52.400Z"
+        },
+        {
+          "id": "7d7d6d89-a45d-4f3c-8d2f-1d1fd0b9bc76",
+          "type": "request_denied",
+          "actor": "Owen Hale",
+          "detail": "Known-channel verification failed. Request blocked.",
+          "createdAt": "2026-08-11T22:12:52.400Z"
+        }
+      ]
+    },
+    {
+      "id": "VR-2404",
+      "title": "Privileged account recovery",
+      "workflowType": "account_recovery",
+      "sourceSystem": "Okta Help Desk",
+      "requestedBy": "Priya Moore",
+      "subjectName": "Lila Chen",
+      "department": "Infrastructure",
+      "assignedTeam": "IT Support",
+      "targetSystem": "ServiceNow Linked Account",
+      "requestedChannel": "Phone via service desk",
+      "targetLabel": "Admin console access",
+      "requestedAction": "Reset standard account password",
+      "summary": "User called in from a known device and completed callback verification.",
+      "riskScore": 66,
+      "priority": "Medium",
+      "amountAtRisk": 0,
+      "verificationOptions": [
+        "verified_callback"
+      ],
+      "requiredApprovalRoles": [],
+      "signals": [
+        {
+          "id": "signal-lost-device",
+          "label": "Lost-device narrative on privileged account",
+          "severity": "high",
+          "context": "Matches known help-desk social-engineering pretext.",
+          "weight": 34
+        },
+        {
+          "id": "signal-geo-shift",
+          "label": "Recent sign-in from new region",
+          "severity": "medium",
+          "context": "Login telemetry shifted from Austin to Bucharest within 6 hours.",
+          "weight": 21
+        },
+        {
+          "id": "signal-device-change",
+          "label": "New MFA device request",
+          "severity": "high",
+          "context": "Would re-establish trust on an unverified device.",
+          "weight": 27
+        }
+      ],
+      "policyIds": [
+        "policy-admin-recovery"
+      ],
+      "status": "verified",
+      "openedAt": "2026-08-11T21:26:52.400Z",
+      "verificationChallenges": [
+        {
+          "id": "2f42a493-7037-44bf-9b3b-ff8f64d575de",
+          "methodType": "verified_callback",
+          "status": "passed",
+          "performedBy": "Nadia Brooks",
+          "note": "Confirmed with registered mobile and device fingerprint.",
+          "createdAt": "2026-08-11T21:30:52.401Z",
+          "completedAt": "2026-08-11T21:32:52.401Z"
+        }
+      ],
+      "approvals": [],
+      "auditTrail": [
+        {
+          "id": "c8c220aa-b646-46a9-8496-2a66c74510ea",
+          "type": "request_opened",
+          "actor": "System",
+          "detail": "Reset request created from ServiceNow.",
+          "createdAt": "2026-08-11T21:26:52.401Z"
+        },
+        {
+          "id": "e21a8db0-c508-4fb5-a634-e06bf24a57ed",
+          "type": "verification_passed",
+          "actor": "Nadia Brooks",
+          "detail": "Callback verification passed and request released.",
+          "createdAt": "2026-08-11T21:32:52.401Z"
+        }
+      ]
+    }
+  ]
+}
