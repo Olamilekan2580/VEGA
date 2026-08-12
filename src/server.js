@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const hpp = require('hpp');
 const supabaseAdmin = require('./config/supabase');
 const { sanitizeRequest } = require('./middleware/sanitize');
+const { storageModeLabel } = require('./data/stateStore');
 
 const clientsRouter = require('./routes/clients');
 const projectsRouter = require('./routes/projects');
@@ -13,6 +14,8 @@ const invoicesRouter = require('./routes/invoices');
 const proposalsRouter = require('./routes/proposals');
 const messagesRouter = require('./routes/messages');
 const portalRouter = require('./routes/portal');
+const connectorsRouter = require('./routes/connectors');
+const productAuthRouter = require('./routes/productAuth');
 const verifyRouter = require('./routes/verify');
 
 const app = express();
@@ -27,7 +30,9 @@ app.use(express.json({ limit: '10kb' }));
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 app.use('/api', limiter);
 
+app.use('/api/auth', productAuthRouter);
 app.use('/api/verify', verifyRouter);
+app.use('/api/connectors', connectorsRouter);
 
 if (supabaseAdmin) {
   app.use('/api/clients', clientsRouter);
@@ -40,9 +45,10 @@ if (supabaseAdmin) {
 
 app.get('/api/health', (req, res) =>
   res.status(200).json({
-    status: 'secure',
-    service: 'VerifyFlow API',
-    demoMode: !supabaseAdmin,
+    status: 'ok',
+    service: 'VegaVerify API',
+    demoMode: !process.env.DATABASE_URL,
+    storage: storageModeLabel(),
   }),
 );
 
